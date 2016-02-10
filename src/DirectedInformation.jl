@@ -15,6 +15,7 @@ and that `N[:,:,1]` represents the data for the source cell and `N[:,:,2]` prepr
 function directed_information{T<:Entropies.EntropyEstimator}(Q::Type{T}, N::Array{Int64,3},windowsize::Integer;nruns::Integer=1,α::Real=1.0)
 	nbins,ntrials,ncells = size(N)
 	Y1 = N[:,:,2]'
+	#pack responses into one array so that we can use ArrayViews to avoid copying
 	XY = reshape(permutedims(N, [3,1,2]), (nbins*ncells,ntrials))
 	#responses for cell1 : XY[1:2:end,:]
 	DI = zeros(nbins-windowsize+1,nruns)
