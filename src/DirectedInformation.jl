@@ -34,6 +34,7 @@ function directed_information{T<:Entropies.EntropyEstimator}(Q::Type{T}, N::Arra
 	DI = zeros(nbins-windowsize+1,nruns)
 	Z = ones(Int64,1,ntrials)
 	for r in 1:nruns
+		verbose > 2 && print("\rComputing $(r)/$(nruns)")
 		for i in 1:nbins-windowsize+1
 			H1,σ1 = Entropies.conditional_entropy(Q, view(Y1, :, i),Z,s;α=α)
 			H2,σ2 = Entropies.conditional_entropy(Q, view(Y1, :, i), view(XY, step*i-(step-1):step*i-1,:),s;α=α)
@@ -56,8 +57,10 @@ function directed_information{T<:Entropies.EntropyEstimator}(Q::Type{T}, N::Arra
 			end
 		end
 	end
+	verbose > 2 && println()
 	DI
 end
+
 
 function directed_information_{T<:Entropies.EntropyEstimator}(Q::Type{T}, X::AbstractArray{Int64,2}, Y::AbstractArray{Int64,2})
 	ntrials, nbins = size(X)
