@@ -2,6 +2,13 @@ module DirectedInformation
 import Entropies
 using ArrayViews
 
+function directed_information{T<:Entropies.EntropyEstimator}(Q::Type{T}, X::Array{Int64,2},Y::Array{Int64,2},windowsize::Integer;nruns::Integer=1,α::Real=1.0, stim::Array{Int64,1}=Int64[],verbose::Int64=0)
+	nbins,ntrials = size(X)
+	size(X) == size(Y) || throw(ArgumentError("X and Y must have the same shape"))
+	N = cat(3, X,Y)
+	directed_information(Q, N, windowsize;nruns=nruns, α=α, stim=stim,verbose=verbose)
+end
+
 """
 Compute the directed information between the variables in `N`. Assumes 
 
