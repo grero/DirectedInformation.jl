@@ -5,11 +5,11 @@ using ArrayViews
 """
 Computes I(X → Y) with a maximum lag equal to `windowsize`
 """
-function directed_information{T<:Entropies.EntropyEstimator}(Q::Type{T}, X::Array{Int64,2},Y::Array{Int64,2},windowsize::Integer;nruns::Integer=1,α::Real=1.0, stim::Array{Int64,1}=Int64[],verbose::Int64=0)
+function directed_information{T<:Entropies.EntropyEstimator}(Q::Type{T}, X::Array{Int64,2},Y::Array{Int64,2},windowsize::Integer;nruns::Integer=1,α::Real=1.0, stim::Array{Int64,1}=Int64[],verbose::Int64=0,max_count::Int64=1)
 	nbins,ntrials = size(X)
 	size(X) == size(Y) || throw(ArgumentError("X and Y must have the same shape"))
 	N = cat(3, X,Y)
-	directed_information(Q, N, windowsize;nruns=nruns, α=α, stim=stim,verbose=verbose)
+	directed_information(Q, N, windowsize;nruns=nruns, α=α, stim=stim,verbose=verbose,max_count=max_count)
 end
 
 """
@@ -23,11 +23,13 @@ If the optional argument `stim` is supplied, `stim` is added as an additional co
 	function directed_information{T<:Entropies.EntropyEstimator}(Q::Type{T}, N::Array{Int64,3},windowsize::Integer;nruns::Integer=1,α::Real=1.0, stim::Array{Int64,1}=Int64)
   
 """
-function directed_information{T<:Entropies.EntropyEstimator}(Q::Type{T}, N::Array{Int64,3},windowsize::Integer;nruns::Integer=1,α::Real=1.0, stim::Array{Int64,1}=Int64[],verbose::Int64=0)
+function directed_information{T<:Entropies.EntropyEstimator}(Q::Type{T}, N::Array{Int64,3},windowsize::Integer;nruns::Integer=1,α::Real=1.0, stim::Array{Int64,1}=Int64[],verbose::Int64=0, max_count::Int64=1)
 	nbins,ntrials,ncells = size(N)
 	Y1 = N[:,:,2]'
+	Y1[Y1.>max_count] = max_count
 	#pack responses into one array so that we can use ArrayViews to avoid copying
 	XY = reshape(permutedims(N, [3,1,2]), (nbins*ncells,ntrials))
+	XY[XY.>max_count] = max_count
 	step = 2
 	if !isempty(stim)
 		#get rid of any gaps
