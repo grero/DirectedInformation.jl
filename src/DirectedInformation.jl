@@ -2,6 +2,9 @@ module DirectedInformation
 import Entropies
 using ArrayViews
 
+"""
+Computes I(X → Y) with a maximum lag equal to `windowsize`
+"""
 function directed_information{T<:Entropies.EntropyEstimator}(Q::Type{T}, X::Array{Int64,2},Y::Array{Int64,2},windowsize::Integer;nruns::Integer=1,α::Real=1.0, stim::Array{Int64,1}=Int64[],verbose::Int64=0)
 	nbins,ntrials = size(X)
 	size(X) == size(Y) || throw(ArgumentError("X and Y must have the same shape"))
