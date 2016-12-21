@@ -20,7 +20,7 @@ function test1()
 	srand(1234)
 	x = aregress_discrete(;ntrials=1000,nbins=2);
 	DI = DirectedInformation.directed_information(Entropies.MaEstimator, permutedims(x[:,:,:], [2,1,3]), 2;nruns=1,α=1.0);
-	@test_approx_eq DI[1,1] 0.02945091609325201 
+	@test_approx_eq DI.strength[1] 0.02945091609325201
 	println("Test directed information passed")
 end
 
