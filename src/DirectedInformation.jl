@@ -100,7 +100,7 @@ function directed_information{T<:Entropies.EntropyEstimator}(Q::Type{T}, N::Arra
   if isempty(bins)
     bins = 1.0:size(DI,1)
   end
-  DirInfo(DI,bins,windowsize)
+  DirInfo(DI,bins,windowsize,α)
 end
 
 
