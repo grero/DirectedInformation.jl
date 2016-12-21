@@ -1,9 +1,35 @@
 module DirectedInformation
 import Entropies
 using ProgressMeter
+using StatsBase
+import StatsBase.zscore
 
 type DirInfo
+  μ::Array{Float64,1}
+  σ::Array{Float64,1}
+  l::Array{Float64,1}
+  m::Array{Float64,1}
+  u::Array{Float64,1}
+  nruns::Int64
+  strength::Array{Float64,1}
+  bins::Array{Float64,1}
+  history::Int64
+  α::Float64
 end
+
+function DirInfo(DI::Array{Float64,2},bins, history,α)
+  μ = mean(DI[:,2:end],2)[:]
+  σ = std(DI[:,2:end],2)[:]
+  l = zeros(size(DI,1))
+  m = zeros(l)
+  u = zeros(l)
+  for i in 1:size(DI,1)
+    l[i], m[i], u[i] = percentile(DI[i,:], [5,50,95])
+  end
+  DirInfo(μ, σ, l, m, u, size(DI,2)-1, DI[:,1], bins, history,α)
+end
+
+zscore(DI::DirInfo) = (DI.strength .- DI.μ)./DI.σ
 
 """
 Computes I(X → Y) with a maximum lag equal to `windowsize`
@@ -71,7 +97,7 @@ function directed_information{T<:Entropies.EntropyEstimator}(Q::Type{T}, N::Arra
 			end
 		end
 	end
-	DI
+  DirInfo(DI,bins,windowsize)
 end
 
 
