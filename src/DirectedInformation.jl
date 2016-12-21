@@ -1,6 +1,9 @@
 module DirectedInformation
 import Entropies
-using ArrayViews
+using ProgressMeter
+
+type DirInfo
+end
 
 """
 Computes I(X → Y) with a maximum lag equal to `windowsize`
@@ -23,7 +26,7 @@ If the optional argument `stim` is supplied, `stim` is added as an additional co
 	function directed_information{T<:Entropies.EntropyEstimator}(Q::Type{T}, N::Array{Int64,3},windowsize::Integer;nruns::Integer=1,α::Real=1.0, stim::Array{Int64,1}=Int64)
   
 """
-function directed_information{T<:Entropies.EntropyEstimator}(Q::Type{T}, N::Array{Int64,3},windowsize::Integer;nruns::Integer=1,α::Real=1.0, stim::Array{Int64,1}=Int64[],verbose::Int64=0, max_count::Int64=1)
+function directed_information{T<:Entropies.EntropyEstimator}(Q::Type{T}, N::Array{Int64,3},windowsize::Integer;nruns::Integer=1,α::Real=1.0, stim::Array{Int64,1}=Int64[], max_count::Int64=1)
 	nbins,ntrials,ncells = size(N)
 	Y1 = N[:,:,2]'
 	Y1[Y1.>max_count] = max_count
@@ -45,8 +48,7 @@ function directed_information{T<:Entropies.EntropyEstimator}(Q::Type{T}, N::Arra
 	#responses for cell1 : XY[1:2:end,:]
 	DI = zeros(nbins-windowsize+1,nruns)
 	Z = ones(Int64,1,ntrials)
-	for r in 1:nruns
-		verbose > 2 && print("\rComputing $(r)/$(nruns)")
+	@showprogress 1 for r in 1:nruns
 		for i in 1:nbins-windowsize+1
 			H1,σ1 = Entropies.conditional_entropy(Q, view(Y1, :, i),Z,s;α=α)
 			H2,σ2 = Entropies.conditional_entropy(Q, view(Y1, :, i), view(XY, step*i-(step-1):step*i-1,:),s;α=α)
@@ -69,7 +71,6 @@ function directed_information{T<:Entropies.EntropyEstimator}(Q::Type{T}, N::Arra
 			end
 		end
 	end
-	verbose > 2 && println()
 	DI
 end
 
