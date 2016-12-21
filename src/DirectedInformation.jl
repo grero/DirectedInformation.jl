@@ -12,7 +12,7 @@ type DirInfo
   u::Array{Float64,1}
   nruns::Int64
   strength::Array{Float64,1}
-  bins::Array{Float64,1}
+  bins::AbstractArray{Float64,1}
   history::Int64
   α::Float64
 end
@@ -52,7 +52,7 @@ If the optional argument `stim` is supplied, `stim` is added as an additional co
 	function directed_information{T<:Entropies.EntropyEstimator}(Q::Type{T}, N::Array{Int64,3},windowsize::Integer;nruns::Integer=1,α::Real=1.0, stim::Array{Int64,1}=Int64)
   
 """
-function directed_information{T<:Entropies.EntropyEstimator}(Q::Type{T}, N::Array{Int64,3},windowsize::Integer;nruns::Integer=1,α::Real=1.0, stim::Array{Int64,1}=Int64[], max_count::Int64=1)
+function directed_information{T<:Entropies.EntropyEstimator}(Q::Type{T}, N::Array{Int64,3},windowsize::Integer;nruns::Integer=1,α::Real=1.0, stim::Array{Int64,1}=Int64[], max_count::Int64=100,bins::AbstractArray=Float64[])
 	nbins,ntrials,ncells = size(N)
 	Y1 = N[:,:,2]'
 	Y1[Y1.>max_count] = max_count
@@ -97,6 +97,9 @@ function directed_information{T<:Entropies.EntropyEstimator}(Q::Type{T}, N::Arra
 			end
 		end
 	end
+  if isempty(bins)
+    bins = 1.0:size(DI,1)
+  end
   DirInfo(DI,bins,windowsize)
 end
 
