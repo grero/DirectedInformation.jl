@@ -5,8 +5,8 @@ using Base.Test
 function aregress_discrete(;ntrials::Int64=100, nbins::Int64=100)
   x = zeros(Int64,ntrials,nbins, 2)
   x[:,1,:] = rand(0:1, ntrials, 2) #initialize variables for the first time bin
-  pxy = Dict(zip(collect(Iterators.Product([0,1], [0,1])),[0.5,0.5,0.2,0.2]))
-  pyx = Dict(zip(collect(Iterators.Product([0,1], [0,1])),[0.3,0.1,0.2,0.4]))
+  pxy = Dict(zip(collect(Iterators.Product(([0,1], [0,1]))),[0.5,0.5,0.2,0.2]))
+  pyx = Dict(zip(collect(Iterators.Product(([0,1], [0,1]))),[0.3,0.1,0.2,0.4]))
   for t in 1:ntrials
     for i in 2:nbins
       x[t,i,1] = rand() > pxy[(x[t,i-1,1], x[t, i-1, 2])]
